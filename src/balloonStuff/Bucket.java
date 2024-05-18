@@ -9,15 +9,34 @@ import java.util.Collections;
 import java.util.Random;
 import java.util.Scanner;
 
+/**
+ * The Bucket class represents a container for balloons in the game.
+ * It allows managing balloons, changing their display, shuffling them, and retrieving information about their state.
+ */
 public class Bucket {
 
+    // Indicator for low resolution images
     private final boolean lowRes;
+
+    // List of balloon images
     private ArrayList<Image> balloonsList = new ArrayList<>();
+
+    // List of Balloon objects
     private ArrayList<Balloon> balloons = new ArrayList<>();
+
+    // Background image for balloons
     private final Image balloonBackground = new Image("resources/Game/balloonPlate.png");
+
+    // Image of the bucket
     private final Image bucketImage = new Image("resources/Game/bucket.png");
+
+    // Indicator for whether the next balloon can be displayed
     private boolean showNext = false;
 
+    /**
+     * Constructor for the Bucket class, initializing the state of the bucket.
+     * @param lowRes Indicator for low resolution images for the balloons
+     */
     public Bucket(boolean lowRes) {
         this.lowRes = lowRes;
         this.balloonBackground.changePosition(0, 0);
@@ -25,6 +44,10 @@ public class Bucket {
         this.bucketImage.makeVisible();
     }
 
+    /**
+     * Method to change the bucket image based on the status.
+     * @param status If true, a low resolution image is used.
+     */
     public void imageSizeChange(boolean status) {
         if (status) {
             this.bucketImage.changeImage("resources/Game/bucketS.png");
@@ -34,7 +57,12 @@ public class Bucket {
 
     }
 
-    public void showBalloons(int x, int y) {
+    /**
+     * Display balloons at the start of the game.
+     * @param x Horizontal position for display
+     * @param y Vertical position for display
+     */
+    public void showBalloonsOnStart(int x, int y) {
         int xN = x * 32;
         int yN = y * 32;
         this.balloonBackground.makeVisible();
@@ -48,7 +76,6 @@ public class Bucket {
                 }
                 balloonImage.makeVisible();
                 this.balloonsList.add(balloonImage);
-                xN += 32;
             } else {
                 Image balloonImage;
                 if (this.lowRes) {
@@ -58,50 +85,79 @@ public class Bucket {
                 }
                 balloonImage.makeVisible();
                 this.balloonsList.add(balloonImage);
-                xN += 32;
             }
+            xN += 32;
         }
     }
 
+    /**
+     * Hide all balloons.
+     */
     public void hideBalloons() {
         for (Image balloon : this.balloonsList) {
             balloon.makeInvisible();
-            this.balloonBackground.makeInvisible();
         }
+        this.balloonBackground.makeInvisible();
     }
 
-    public ArrayList<Balloon> getBalloons() {
-        return this.balloons;
-    }
-
+    /**
+     * Shuffle the balloons in the list.
+     */
     public void shuffle() {
         Collections.shuffle(this.balloons);
     }
 
+    /**
+     * Return the first balloon from the list and remove it.
+     * @return The first balloon from the list
+     */
     public Balloon takeAndThrow() {
         return this.balloons.removeFirst();
     }
 
+    /**
+     * Set whether the next balloon can be shown.
+     * @param input True if the next balloon can be shown
+     */
     public void setShowNext(boolean input) {
         this.showNext = input;
     }
 
+    /**
+     * Check if the next balloon can be shown.
+     * @return True if the next balloon can be shown
+     */
     public boolean canShowNext() {
         return this.showNext;
     }
 
-    public Balloon showNext() {
+    /**
+     * Get the next balloon in the list.
+     * @return The first balloon in the list
+     */
+    public Balloon getNext() {
         return this.balloons.getFirst();
     }
 
+    /**
+     * Empty the list of balloons.
+     */
     public void empty() {
         this.balloons = new ArrayList<>();
     }
 
+    /**
+     * Check if the list of balloons is empty.
+     * @return True if the list of balloons is empty
+     */
     public boolean isEmpty() {
         return this.balloons.isEmpty();
     }
 
+    /**
+     * Get the number of balloons in the bucket.
+     * @return The number of balloons in the bucket
+     */
     public int getNumberOfBalloons() {
         if (this.balloons == null) {
             return -1;
@@ -109,7 +165,11 @@ public class Bucket {
         return this.balloons.size();
     }
 
-    public int numberOfGlueBalloons() {
+    /**
+     * Get the number of "bad" (hurtful) balloons in the bucket.
+     * @return The number of "bad" (hurtful) balloons in the bucket
+     */
+    public int getNumberOfBadBalloons() {
         int counter = 0;
         for (Balloon balloon : this.balloons) {
             if (balloon.getType()) {
@@ -119,6 +179,9 @@ public class Bucket {
         return counter;
     }
 
+    /**
+     * Reset the bucket and load new balloons from a text file.
+     */
     public void reset() {
         this.hideBalloons();
         File file = new File("resources/combinations.txt");

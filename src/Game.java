@@ -14,32 +14,86 @@ import fri.shapesge.Square;
 
 import java.util.Random;
 
+/**
+ * The Game class represents the game.
+ */
 public class Game {
 
+    // The image of the use button.
     private final Image useButton = new Image("resources/Game/bgUse.png", 0, 0);
+
+    // The image of the ability button.
     private final Image abilityButton = new Image("resources/Game/bgAbility.png", 0, 0);
+
+    // The image of the throw buttons.
     private final Image throwButtons = new Image("resources/game/selectPlayer.png", 0, 0);
+
+    // The image of the thrown balloon.
     private final Circle thrownBalloonImage = new Circle(448 - 16, 304 - 16);
+
+    // The image of the next balloon.
     private final Circle nextBalloonImage = new Circle(448 - 16, 304 - 16);
+
+    // The bucket associated with the current game.
     private final Bucket bucket;
+
+    // Random generator.
     private final Random random = new Random();
+
+    // The user entity.
     private final Entity user;
+
+    // The enemy entity.
     private final Entity enemy;
+
+    // The behavior of the enemy entity.
     private final Behavior behavior;
+
+    // The selection square.
     private final Square selection = new Square();
+
+    // True if the game is in low resolution, false otherwise.
     private final boolean lowRes;
+
+    // The counter used for flickering the selected item for user.
     private int selectionTimer = 0;
+
+    // True if an item is selected, false otherwise.
     private boolean isSelected = false;
+
+    // The selected item.
     private Item selectedItem = null;
+
+    // The counter used for the game.
     private int counter = 0;
+
+    // The counter used for the enemy.
     private int enemyCounter = 0;
+
+    // True if the ability is ready, false otherwise.
     private boolean abilityReady = false;
+
+    // True if the player can throw, false otherwise.
     private boolean readyToThrow = false;
+
+    // The thrown balloon.
     private Balloon thrownBalloon;
+
+    // The index of the selected item.
     private int itemIndex;
+
+    // True if it is the player's turn, false otherwise.
     private boolean playersTurn = true;
 
+    // The counter used for the thrown balloon image.
+    private int thrownBalloonImageTimer;
 
+    /**
+     * Constructs a Game object with the specified user, enemy, and lowRes.
+     * @param user the user character
+     * @param enemy the enemy character
+     * @param lowRes true if the game is in low resolution, false otherwise
+     */
     public Game(int user, int enemy, boolean lowRes) {
         this.lowRes = lowRes;
         this.bucket = new Bucket(this.lowRes);
@@ -49,29 +103,29 @@ public class Game {
         manager.manageObject(this);
         this.selection.changeSize(36);
         this.selection.changeColor("gray");
-        //int lives = this.random.nextInt(3) + 1;
 
+        // Create the user and enemy characters based on the user and enemy values.
         switch (user) {
             case 3:
-                this.user = new Magician(this.bucket);
+                this.user = new Magician(this.bucket, 18, 18);
                 break;
             case 2:
-                this.user = new King(this.bucket);
+                this.user = new King(this.bucket, 18, 18);
                 break;
             default:
-                this.user = new Thief(this.bucket);
+                this.user = new Thief(this.bucket, 18, 18);
                 break;
         }
 
         switch (enemy) {
             case 3:
-                this.enemy = new Magician(this.bucket);
+                this.enemy = new Magician(this.bucket, 18, 6);
                 break;
             case 2:
-                this.enemy = new King(this.bucket);
+                this.enemy = new King(this.bucket, 18, 6);
                 break;
             default:
-                this.enemy = new Thief(this.bucket);
+                this.enemy = new Thief(this.bucket, 18, 6);
                 break;
         }
 
@@ -80,6 +134,9 @@ public class Game {
         this.isSelected = false;
     }
 
+    /**
+     * Resets the game.
+     */
     public void reset() {
         int randomLives = this.random.nextInt(3) + 2;
         this.user.reset(randomLives);
@@ -88,6 +145,9 @@ public class Game {
         this.outOfBalloons();
     }
 
+    /**
+     * When bucket is empty, generate items for both players and reset the bucket.
+     */
     public void outOfBalloons() {
         int numberOfItems = this.random.nextInt(3) + 1;
         this.user.generateInventoryItems(numberOfItems, this.enemy, this.lowRes);
@@ -95,15 +155,23 @@ public class Game {
         this.bucket.empty();
         this.bucket.reset();
         this.bucket.shuffle();
-        this.bucket.showBalloons(5, 9);
+        this.bucket.showBalloonsOnStart(5, 9);
         this.bucket.shuffle();
         this.counter = 0;
         this.thrownBalloonImage.makeInvisible();
     }
 
+    /**
+     * Makes the game tick.
+     */
     public void tik() {
         this.counter += 1;
         if (this.counter >= 300) {
+            if (this.thrownBalloonImageTimer >= 50) {
+                this.thrownBalloonImage.makeInvisible();
+            } else {
+                this.thrownBalloonImageTimer += 1;
+            }
             this.bucket.hideBalloons();
             if (this.user != null) {
                 this.user.drawLives(15, 10);
@@ -125,7 +193,7 @@ public class Game {
             }
 
             if (this.bucket.canShowNext()) {
-                if (this.bucket.showNext().getType()) {
+                if (this.bucket.getNext().getType()) {
                     this.nextBalloonImage.changeColor("red");
                 } else {
                     this.nextBalloonImage.changeColor("blue");
@@ -175,6 +243,7 @@ public class Game {
                         this.thrownBalloonImage.changeColor("blue");
                     }
                     this.thrownBalloonImage.makeVisible();
+                    this.thrownBalloonImageTimer = 0;
                     if ((thrownToSelf && this.thrownBalloon.getType()) || (!thrownToSelf && !this.thrownBalloon.getType()) && this.user != null && !this.user.cannotMove()) {
                         this.playersTurn = true;
                     } else if (this.user != null && this.user.cannotMove()) {
@@ -187,6 +256,11 @@ public class Game {
         }
     }
 
+    /**
+     * Chooses the coordinates of the mouse click.
+     * @param x the x-coordinate of the mouse click
+     * @param y the y-coordinate of the mouse click
+     */
     public void chooseCoords(int x, int y) {
         if (this.playersTurn) {
             x = x / 32;
@@ -232,8 +306,10 @@ public class Game {
                     }
                 }
                 this.thrownBalloonImage.makeVisible();
+                this.thrownBalloonImageTimer = 0;
                 this.readyToThrow = false;
             } else if (x == 4 && (y == 16 || y == 17) && this.readyToThrow) {
+                this.nextBalloonImage.makeInvisible();
                 this.user.receiveBalloon(this.thrownBalloon);
                 this.thrownBalloonImage.makeInvisible();
                 if (this.thrownBalloon.getType()) {
@@ -247,6 +323,7 @@ public class Game {
                     this.thrownBalloonImage.changeColor("blue");
                 }
                 this.thrownBalloonImage.makeVisible();
+                this.thrownBalloonImageTimer = 0;
                 this.readyToThrow = false;
             } else if (x >= 1 && x <= 4 && y == 8 && this.isSelected) {
                 this.selectedItem.use();

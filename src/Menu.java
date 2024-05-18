@@ -1,24 +1,49 @@
 import fri.shapesge.Image;
 import fri.shapesge.Manager;
 
+/**
+ * The Menu class represents the main menu of the game.
+ */
 public class Menu {
 
+    // The manager.
     private final Manager manager = new Manager();
+
+    // The image of the menu.
     private final Image menu = new Image("resources/Menu/bg.png");
+
+    // The image of the background.
     private final Image bg = new Image("resources/table2.png");
+
+    // The image of the about page.
     private final Image aboutBg = new Image("resources/Menu/about.png");
+
+    // The image of the character selection page.
     private final Image charPickBg = new Image("resources/Menu/charBg.png");
+
+    // The image of the selected user.
     private final Image selectedUser = new Image("resources/Menu/user1.png");
+
+    // The image of the selected enemy.
     private final Image selectedEnemy = new Image("resources/Menu/user1.png");
+
+    // The image of the low resolution box tick.
     private final Image lowResBoxTick = new Image("resources/Menu/box.png");
 
+    // Booleans to check if the about page or character selection page is open.
     private boolean aboutPage = false;
     private boolean charPage = false;
 
+    // Counters for the user and enemy selection.
     private int userCounter = 1;
     private int enemyCounter = 1;
+
+    // Boolean to check if the game is in low resolution.
     private boolean lowRes = false;
 
+    /**
+     * Constructs a Menu object.
+     */
     public Menu() {
         this.manager.manageObject(this);
         this.bg.changePosition(0, 0);
@@ -31,6 +56,11 @@ public class Menu {
         this.lowResBoxTick.makeVisible();
     }
 
+    /**
+     * Chooses the coordinates of the mouse click.
+     * @param x the x-coordinate of the mouse click
+     * @param y the y-coordinate of the mouse click
+     */
     public void chooseCoords(int x, int y) {
         x = x / 32;
         y = y / 32;
