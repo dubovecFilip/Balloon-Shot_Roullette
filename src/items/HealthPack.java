@@ -16,7 +16,6 @@ public class HealthPack extends Item {
 
     @Override
     public void use() {
-        this.fromWho.dryYourself();
-        System.out.println("Health Pack used!");
+        this.getFromWho().dryYourself();
     }
 }

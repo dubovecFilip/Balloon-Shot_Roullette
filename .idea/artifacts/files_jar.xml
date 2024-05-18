@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="files:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/files_jar</output-path>
+    <root id="archive" name="files.jar">
+      <element id="module-output" name="files" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../../shapesGE-2.0.4.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

@@ -4,7 +4,7 @@ import balloonStuff.Bucket;
 import entities.Entity;
 import entities.characters.Thief;
 import entities.characters.King;
-import entities.characters.Char3;
+import entities.characters.Magician;
 import items.Item;
 
 import fri.shapesge.Circle;
@@ -12,12 +12,10 @@ import fri.shapesge.Image;
 import fri.shapesge.Manager;
 import fri.shapesge.Square;
 
-import javax.swing.border.BevelBorder;
 import java.util.Random;
 
 public class Game {
 
-    private final Image background = new Image("resources/Game/bg.png", 0, 0);
     private final Image useButton = new Image("resources/Game/bgUse.png", 0, 0);
     private final Image abilityButton = new Image("resources/Game/bgAbility.png", 0, 0);
     private final Image throwButtons = new Image("resources/game/selectPlayer.png", 0, 0);
@@ -45,8 +43,8 @@ public class Game {
     public Game(int user, int enemy, boolean lowRes) {
         this.lowRes = lowRes;
         this.bucket = new Bucket(this.lowRes);
-        this.background.makeVisible();
-        this.bucket.showBucket();
+        Image background = new Image("resources/Game/bg.png", 0, 0);
+        background.makeVisible();
         Manager manager = new Manager();
         manager.manageObject(this);
         this.selection.changeSize(36);
@@ -55,7 +53,7 @@ public class Game {
 
         switch (user) {
             case 3:
-                this.user = new Char3(this.bucket);
+                this.user = new Magician(this.bucket);
                 break;
             case 2:
                 this.user = new King(this.bucket);
@@ -67,7 +65,7 @@ public class Game {
 
         switch (enemy) {
             case 3:
-                this.enemy = new Char3(this.bucket);
+                this.enemy = new Magician(this.bucket);
                 break;
             case 2:
                 this.enemy = new King(this.bucket);
@@ -78,7 +76,6 @@ public class Game {
         }
 
         this.behavior = new Behavior(this.enemy, this.user, this.bucket);
-        System.out.println("User: " + this.user + " Enemy: " + this.enemy);
         this.reset();
         this.isSelected = false;
     }
@@ -121,7 +118,7 @@ public class Game {
                 this.enemy.drawLives(15, 8);
                 this.enemy.drawInventory(6, 1);
             }
-            if (this.bucket != null && this.user != null && this.enemy != null && !this.readyToThrow) {
+            if (this.user != null && this.enemy != null && !this.readyToThrow) {
                 if (this.bucket.getNumberOfBalloons() == 0) {
                     this.outOfBalloons();
                 }
@@ -163,10 +160,6 @@ public class Game {
             if (!this.isSelected) {
                 this.useButton.makeInvisible();
             }
-//            System.out.println(this.isSelected);
-//            System.out.println("Players turn");
-//            System.out.println(this.playersTurn);
-//            System.out.println(this.enemyCounter);
         }
         if (!this.playersTurn) {
             this.enemyCounter += 1;
@@ -175,15 +168,17 @@ public class Game {
                     this.behavior.makeMove();
                     this.thrownBalloon = this.behavior.getResult().getThrownBalloon();
                     boolean thrownToSelf = this.behavior.getResult().isThrownToSelf();
-                    System.out.println("Enemys turn");
                     this.enemyCounter = 0;
                     if (this.thrownBalloon.getType()) {
                         this.thrownBalloonImage.changeColor("red");
                     } else {
                         this.thrownBalloonImage.changeColor("blue");
                     }
-                    if (thrownToSelf && this.thrownBalloon.getType() || !thrownToSelf && !this.thrownBalloon.getType()) {
+                    this.thrownBalloonImage.makeVisible();
+                    if ((thrownToSelf && this.thrownBalloon.getType()) || (!thrownToSelf && !this.thrownBalloon.getType()) && this.user != null && !this.user.cannotMove()) {
                         this.playersTurn = true;
+                    } else if (this.user != null && this.user.cannotMove()) {
+                        this.user.allowMovement(true);
                     }
                 } else {
                     this.bucket.reset();
@@ -194,7 +189,6 @@ public class Game {
 
     public void chooseCoords(int x, int y) {
         if (this.playersTurn) {
-            //System.out.println("Chosen coords: " + x / 32 * 32 + " " + y / 32 * 32);
             x = x / 32;
             y = y / 32;
             if (!this.isSelected) {
@@ -217,7 +211,6 @@ public class Game {
             } else if (x == 12 && y == 17) {
                 this.itemIndex = 8;
             } else if ((x >= 6 && x < 13) && (y >= 6 && y < 13)) {
-                //System.out.println("Bucket");
                 if (!this.readyToThrow) {
                     this.thrownBalloon = this.bucket.takeAndThrow();
                 }
@@ -232,7 +225,11 @@ public class Game {
                     this.thrownBalloonImage.changeColor("red");
                 } else {
                     this.thrownBalloonImage.changeColor("blue");
-                    this.playersTurn = false;
+                    if (!this.enemy.cannotMove()) {
+                        this.playersTurn = false;
+                    } else {
+                        this.enemy.allowMovement(true);
+                    }
                 }
                 this.thrownBalloonImage.makeVisible();
                 this.readyToThrow = false;
@@ -241,18 +238,18 @@ public class Game {
                 this.thrownBalloonImage.makeInvisible();
                 if (this.thrownBalloon.getType()) {
                     this.thrownBalloonImage.changeColor("red");
-                    this.playersTurn = false;
+                    if (!this.enemy.cannotMove()) {
+                        this.playersTurn = false;
+                    } else {
+                        this.enemy.allowMovement(true);
+                    }
                 } else {
                     this.thrownBalloonImage.changeColor("blue");
                 }
                 this.thrownBalloonImage.makeVisible();
                 this.readyToThrow = false;
-            } else if (x == 0 && y == 0) {
-                this.user.getInventory().removeItem(0);
             } else if (x >= 1 && x <= 4 && y == 8 && this.isSelected) {
-                //System.out.println("Use");
                 this.selectedItem.use();
-                System.out.printf("Item used: %s\n", this.selectedItem + " " + this.itemIndex);
                 this.user.removeItem(this.itemIndex - 1);
                 this.user.drawInventory(6, 15);
                 this.selectedItem = null;
@@ -267,11 +264,9 @@ public class Game {
                 this.isSelected = false;
                 this.itemIndex = 0;
             }
-            System.out.println(this.itemIndex);
             if (this.itemIndex != 0 && this.user.getInventory().getItem(this.itemIndex) != null) {
                 this.selectedItem = this.user.getInventory().getItem(this.itemIndex);
                 this.isSelected = true;
-                //System.out.println("Item");
             } else {
                 this.selectedItem = null;
                 this.isSelected = false;

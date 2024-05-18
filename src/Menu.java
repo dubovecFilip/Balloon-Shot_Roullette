@@ -32,7 +32,6 @@ public class Menu {
     }
 
     public void chooseCoords(int x, int y) {
-        System.out.println("Chosen coords: " + x / 32 + " " + y / 32);
         x = x / 32;
         y = y / 32;
         if (x >= 5 && x <= 13 && y >= 6 && y <= 7 && !this.aboutPage && !this.charPage) {

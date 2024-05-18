@@ -16,7 +16,6 @@ public class MagnifyingGlass extends Item {
 
     @Override
     public void use() {
-        this.bucket.setShowNext(true);
-        System.out.println("Magnifying Glass used!");
+        this.getBucket().setShowNext(true);
     }
 }

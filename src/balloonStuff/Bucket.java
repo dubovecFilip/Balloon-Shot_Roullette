@@ -22,9 +22,6 @@ public class Bucket {
         this.lowRes = lowRes;
         this.balloonBackground.changePosition(0, 0);
         this.bucketImage.changePosition(0, 0);
-    }
-
-    public void showBucket() {
         this.bucketImage.makeVisible();
     }
 
@@ -101,6 +98,10 @@ public class Bucket {
         this.balloons = new ArrayList<>();
     }
 
+    public boolean isEmpty() {
+        return this.balloons.isEmpty();
+    }
+
     public int getNumberOfBalloons() {
         if (this.balloons == null) {
             return -1;
@@ -125,13 +126,11 @@ public class Bucket {
             Scanner scanner = new Scanner(file);
             Random rand = new Random();
             int whatLine = rand.nextInt(10);
-            //System.out.println(whatLine + 1);
             for (int i = 0; i < whatLine; i++) {
                 scanner.nextLine();
             }
             int waterB = scanner.nextInt();
             int glueB = scanner.nextInt();
-            //System.out.println(waterB + " " + glueB);
             for (int i = 0; i < waterB; i++) {
                 Balloon balloon = new Balloon(false);
                 this.balloons.add(balloon);

@@ -16,7 +16,6 @@ public class HandCuffs extends Item {
 
     @Override
     public void use() {
-        this.toWho.allowMovement(false);
-        System.out.println("Hand Cuffs used!");
+        super.getToWho().allowMovement(false);
     }
 }

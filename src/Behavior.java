@@ -53,7 +53,7 @@ public class Behavior {
 
         Balloon thrownBalloon = null;
         boolean thrownToSelf = false;
-        if (!this.bucket.getBalloons().isEmpty()) {
+        if (!this.bucket.isEmpty()) {
             // Default Actions
             thrownBalloon = this.bucket.takeAndThrow();
             if (this.magnifyingGlassAblitity) {

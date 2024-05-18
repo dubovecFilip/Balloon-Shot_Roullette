@@ -70,19 +70,19 @@ public abstract class Entity {
             int item = this.random.nextInt(5);
             switch (item) {
                 case 0:
-                    this.addItem(new WeakPills(this, otherOne, this.bucket, lowRes));
+                    this.addItem(new Soda(this, otherOne, this.bucket, lowRes));
                     break;
                 case 1:
                     this.addItem(new HandCuffs(this, otherOne, this.bucket, lowRes));
                     break;
                 case 2:
-                    this.addItem(new HealthPack(this, otherOne, this.bucket, lowRes));
-                    break;
-                case 3:
                     this.addItem(new MagnifyingGlass(this, otherOne, this.bucket, lowRes));
                     break;
+                case 3:
+                    this.addItem(new HealthPack(this, otherOne, this.bucket, lowRes));
+                    break;
                 case 4:
-                    this.addItem(new Soda(this, otherOne, this.bucket, lowRes));
+                    this.addItem(new WeakPills(this, otherOne, this.bucket, lowRes));
                     break;
             }
         }
@@ -182,10 +182,10 @@ public abstract class Entity {
     }
 
     public void allowMovement(boolean status) {
-        this.unableToMove = status;
+        this.unableToMove = !status;
     }
 
-    public boolean getMovementStatus() {
+    public boolean cannotMove() {
         return this.unableToMove;
     }
 

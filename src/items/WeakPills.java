@@ -16,7 +16,6 @@ public class WeakPills extends Item {
 
     @Override
     public void use() {
-        this.toWho.setWeak();
-        System.out.println("Weak Pills used!");
+        this.getToWho().setWeak();
     }
 }

@@ -15,6 +15,5 @@ public class King extends Entity {
         Inventory temp = this.getInventory();
         this.setInventory(toWho.getInventory());
         toWho.setInventory(temp);
-        System.out.println("King used ability!");
     }
 }
