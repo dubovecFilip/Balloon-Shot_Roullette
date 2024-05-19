@@ -279,6 +279,10 @@ public abstract class Entity {
         this.lives = randomLives;
     }
 
+    public int getLives() {
+        return this.lives;
+    }
+
     /**
      * Method to check if the entity can heal.
      * @return True if the entity can heal, false otherwise.

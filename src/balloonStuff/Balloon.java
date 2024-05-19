@@ -7,13 +7,13 @@ package balloonStuff;
 public class Balloon {
 
     // A private final field that indicates the danger status of the balloon.
-    private final Boolean dangerStatus;
+    private final boolean dangerStatus;
 
     /**
      * Constructor for creating a new Balloon instance.
      * @param dangerStatus A Boolean indicating if the balloon is dangerous (true) or not (false).
      */
-    public Balloon(Boolean dangerStatus) {
+    public Balloon(boolean dangerStatus) {
         this.dangerStatus = dangerStatus;
     }
 
@@ -21,7 +21,7 @@ public class Balloon {
      * Retrieves the danger status of the balloon.
      * @return A Boolean indicating the danger status: true if the balloon is dangerous, false otherwise.
      */
-    public Boolean getType() {
+    public boolean getType() {
         return this.dangerStatus;
     }
 }

@@ -28,6 +28,9 @@ public class Game {
     // The image of the throw buttons.
     private final Image throwButtons = new Image("resources/game/selectPlayer.png", 0, 0);
 
+    // The image of the end state.
+    private final Image endState = new Image("resources/Game/youWon.png", 0, 0);
+
     // The image of the thrown balloon.
     private final Circle thrownBalloonImage = new Circle(448 - 16, 304 - 16);
 
@@ -87,6 +90,9 @@ public class Game {
 
     // The counter used for the thrown balloon image.
     private int thrownBalloonImageTimer;
+
+    // True if the game has ended, false otherwise.
+    private boolean endGame = false;
 
     /**
      * Constructs a Game object with the specified user, enemy, and lowRes.
@@ -163,10 +169,11 @@ public class Game {
 
     /**
      * Makes the game tick.
+     * Game logic is here.
      */
     public void tik() {
         this.counter += 1;
-        if (this.counter >= 300) {
+        if (this.counter >= 300 && !this.endGame) {
             if (this.thrownBalloonImageTimer >= 50) {
                 this.thrownBalloonImage.makeInvisible();
             } else {
@@ -229,7 +236,20 @@ public class Game {
                 this.useButton.makeInvisible();
             }
         }
-        if (!this.playersTurn) {
+
+        if (this.user != null && this.user.getLives() <= 0) {
+            this.endState.changeImage("resources/Game/youLost.png");
+            this.endGame = true;
+        } else if (this.enemy != null && this.enemy.getLives() <= 0) {
+            this.endState.changeImage("resources/Game/youWon.png");
+            this.endGame = true;
+        }
+
+        if (this.endGame) {
+            this.endState.makeVisible();
+        }
+
+        if (!this.playersTurn && !this.endGame) {
             this.enemyCounter += 1;
             if (this.enemyCounter > 200 && this.counter >= 300) {
                 if (this.bucket.getNumberOfBalloons() != 0) {
@@ -262,9 +282,9 @@ public class Game {
      * @param y the y-coordinate of the mouse click
      */
     public void chooseCoords(int x, int y) {
+        x = x / 32;
+        y = y / 32;
         if (this.playersTurn) {
-            x = x / 32;
-            y = y / 32;
             if (!this.isSelected) {
                 this.itemIndex = 0;
             }
@@ -354,6 +374,12 @@ public class Game {
             } else {
                 this.selection.makeInvisible();
             }
+        }
+        if (this.endGame && x >= 5 && x < 14 && y >= 9 && y < 11) {
+            this.reset();
+            this.endState.makeInvisible();
+            this.endGame = false;
+            this.playersTurn = true;
         }
     }
 }
